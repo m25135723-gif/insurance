@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保險到期追蹤系統</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
+.app{max-width:600px;margin:0 auto;padding:1.5rem 1rem}
+h1{font-size:18px;font-weight:600;margin-bottom:1.5rem;color:#1a1a1a}
+.tabs{display:flex;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin-bottom:1.5rem;background:#fff}
+.tab{flex:1;padding:10px;text-align:center;font-size:14px;cursor:pointer;background:#fff;color:#888;border:none;font-family:inherit;border-right:1px solid #e0e0e0}
+.tab:last-child{border-right:none}
+.tab.active{background:#f0f0f0;color:#1a1a1a;font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.5rem}
+.stat{background:#fff;border-radius:10px;padding:1rem;text-align:center;border:1px solid #e0e0e0}
+.stat-num{font-size:22px;font-weight:600;color:#1a1a1a}
+.stat-label{font-size:11px;color:#888;margin-top:3px}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.section-hd{font-size:15px;font-weight:500;margin-bottom:1rem;color:#1a1a1a}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+label{font-size:12px;color:#888}
+input,select{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a;font-family:inherit}
+input:focus,select:focus{outline:none;border-color:#999}
+.btn{width:100%;padding:11px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
+.btn:hover{background:#f5f5f5}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.btn-primary:hover{background:#333}
+.filter-row{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.fbtn{padding:6px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#888;font-size:12px;cursor:pointer;font-family:inherit}
+.fbtn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.client-list{display:flex;flex-direction:column;gap:10px}
+.cc{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem}
+.cc.urgent{border-left:4px solid #E24B4A}
+.cc.warning{border-left:4px solid #EF9F27}
+.cc.ok{border-left:4px solid #1D9E75}
+.cc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.cc-name{font-size:15px;font-weight:500}
+.cc-plate{font-size:12px;color:#888;margin-top:2px;font-family:monospace}
+.cc-actions{display:flex;gap:4px}
+.icon-btn{background:none;border:none;color:#bbb;cursor:pointer;font-size:16px;padding:2px 5px}
+.icon-btn:hover{color:#1a1a1a}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:8px;border:1px solid}
+.b-urgent{background:#FCEBEB;color:#791F1F;border-color:#F09595}
+.b-warning{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.b-ok{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
+.b-none{background:#f5f5f5;color:#aaa;border-color:#ddd}
+.dot{width:5px;height:5px;border-radius:50%;display:inline-block;flex-shrink:0}
+.d-urgent{background:#E24B4A}.d-warning{background:#EF9F27}.d-ok{background:#1D9E75}
+.note{margin-top:7px;font-size:12px;color:#888}
+.empty{text-align:center;padding:2.5rem;color:#bbb;font-size:14px}
+.loading{text-align:center;padding:2.5rem;color:#888;font-size:14px}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;border-radius:8px;padding:10px 20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:460px}
+.modal-title{font-size:16px;font-weight:500;margin-bottom:1rem}
+.modal-actions{display:flex;gap:8px;margin-top:1rem}
+.modal-actions .btn{flex:1}
+.cv{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1.25rem}
+.cv-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid #f0f0f0}
+.avatar{width:46px;height:46px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;color:#1a73e8;flex-shrink:0}
+.cv-name{font-size:17px;font-weight:500}
+.cv-plate{font-size:13px;color:#888;margin-top:2px;font-family:monospace}
+.cv-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f5f5f5}
+.cv-row:last-child{border-bottom:none}
+.cv-label{font-size:13px;color:#888}
+.cv-val{font-size:13px;font-weight:500}
+.svc-box{background:#f8f8f8;border-radius:10px;padding:1rem;margin-top:1rem;font-size:13px;color:#888;line-height:1.8;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>保險到期追蹤系統</h1>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('list')">客戶名單</button>
+    <button class="tab" onclick="switchTab('add')">新增客戶</button>
+    <button class="tab" onclick="switchTab('view')">客戶展示</button>
+  </div>
+
+  <div id="tab-list">
+    <div class="stats" id="stats">
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">總客戶數</div></div>
+      <div class="stat"><div class="stat-num" style="color:#E24B4A">0</div><div class="stat-label">7天內到期</div></div>
+      <div class="stat"><div class="stat-num" style="color:#EF9F27">0</div><div class="stat-label">30天內到期</div></div>
+    </div>
+    <div class="filter-row">
+      <button class="fbtn active" onclick="setFilter('all',this)">全部</button>
+      <button class="fbtn" onclick="setFilter('urgent',this)">緊急</button>
+      <button class="fbtn" onclick="setFilter('warning',this)">注意</button>
+      <button class="fbtn" onclick="setFilter('ok',this)">正常</button>
+    </div>
+    <div class="client-list" id="client-list"><div class="loading">載入中...</div></div>
+  </div>
+
+  <div id="tab-add" style="display:none">
+    <div class="card">
+      <p class="section-hd">新增客戶</p>
+      <div class="form-grid">
+        <div class="fg"><label>客戶姓名</label><input id="f-name" type="text" placeholder="王小明"></div>
+        <div class="fg"><label>車牌號碼</label><input id="f-plate" type="text" placeholder="ABC-1234"></div>
+        <div class="fg"><label>強制險到期日</label><input id="f-comp" type="date"></div>
+        <div class="fg"><label>任意險到期日（選填）</label><input id="f-vol" type="date"></div>
+        <div class="fg full"><label>備註（選填）</label><input id="f-note" type="text" placeholder="例如：有超額責任險、家裡兩台車"></div>
+      </div>
+      <button class="btn btn-primary" id="add-btn" onclick="addClient()">新增客戶</button>
+    </div>
+  </div>
+
+  <div id="tab-view" style="display:none">
+    <div class="card">
+      <p class="section-hd">選擇客戶</p>
+      <select id="view-select" onchange="renderCV()"><option value="">請選擇客戶</option></select>
+    </div>
+    <div id="cv-area"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <p class="modal-title">編輯客戶資料</p>
+    <div class="form-grid">
+      <div class="fg"><label>姓名</label><input id="e-name" type="text"></div>
+      <div class="fg"><label>車牌</label><input id="e-plate" type="text"></div>
+      <div class="fg"><label>強制險到期日</label><input id="e-comp" type="date"></div>
+      <div class="fg"><label>任意險到期日</label><input id="e-vol" type="date"></div>
+      <div class="fg full"><label>備註</label><input id="e-note" type="text"></div>
+    </div>
+    <input type="hidden" id="e-id">
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveEdit()">儲存</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API='https://script.google.com/macros/s/AKfycbw2PSCqdWzUUIAsLhNvlBtRn1GDuUMk_68-QzIoNAojSm45DZvEjkUMR7gDNgJH5ig-cA/exec';
+let clients=[],filter='all';
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function switchTab(tab){
+  ['list','add','view'].forEach((t,i)=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+    document.querySelectorAll('.tab')[i].classList.toggle('active',t===tab);
+  });
+  if(tab==='view')fillSelect();
+}
+
+const daysUntil=d=>d?Math.ceil((new Date(d)-new Date())/86400000):null;
+const status=d=>d===null?'none':d<=7?'urgent':d<=30?'warning':'ok';
+const cardStatus=c=>{const s=[daysUntil(c.comp),daysUntil(c.vol)].filter(d=>d!==null).map(status);return s.includes('urgent')?'urgent':s.includes('warning')?'warning':s.length?'ok':'none';};
+const fmtDate=d=>{if(!d)return'—';const dt=new Date(d);return`${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;};
+const statusTxt=s=>s==='urgent'?'即將到期':s==='warning'?'請注意':s==='ok'?'保障中':'未設定';
+const statusColor=s=>s==='urgent'?'#E24B4A':s==='warning'?'#EF9F27':s==='ok'?'#1D9E75':'#aaa';
+
+function badgeHtml(label,d){
+  const days=daysUntil(d);
+  if(!d)return`<span class="badge b-none">${label} 未填</span>`;
+  const s=status(days);
+  return`<span class="badge b-${s}"><span class="dot d-${s}"></span>${label}｜${days<=0?'已到期':days+'天後'}</span>`;
+}
+
+async function call(params){
+  const r=await fetch(API+'?'+new URLSearchParams(params));
+  if(!r.ok)throw new Error(r.status);
+  return r.json();
+}
+
+async function post(body){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(r.status);
+  return r.json();
+}
+
+async function load(){
+  try{
+    const data=await call({action:'getAll'});
+    clients=Array.isArray(data)?data:[];
+    render();
+  }catch(e){
+    document.getElementById('client-list').innerHTML='<div class="empty">載入失敗，請重新整理頁面</div>';
+  }
+}
+
+function setFilter(f,btn){
+  filter=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function render(){
+  const urgent=clients.filter(c=>cardStatus(c)==='urgent').length;
+  const warning=clients.filter(c=>cardStatus(c)==='warning').length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-num">${clients.length}</div><div class="stat-label">總客戶數</div></div>
+    <div class="stat"><div class="stat-num" style="color:#E24B4A">${urgent}</div><div class="stat-label">7天內到期</div></div>
+    <div class="stat"><div class="stat-num" style="color:#EF9F27">${warning}</div><div class="stat-label">30天內到期</div></div>`;
+  const filtered=clients.filter(c=>filter==='all'||cardStatus(c)===filter).sort((a,b)=>(daysUntil(a.comp)??9999)-(daysUntil(b.comp)??9999));
+  const list=document.getElementById('client-list');
+  if(!filtered.length){list.innerHTML=`<div class="empty">尚無${filter==='all'?'':'符合條件的'}客戶資料</div>`;return;}
+  list.innerHTML=filtered.map(c=>`
+    <div class="cc ${cardStatus(c)}">
+      <div class="cc-header">
+        <div><div class="cc-name">${c.name}</div><div class="cc-plate">${c.plate}</div></div>
+        <div class="cc-actions">
+          <button class="icon-btn" onclick="openEdit('${c.id}')">✎</button>
+          <button class="icon-btn" style="color:#E24B4A" onclick="confirmDel('${c.id}','${c.name}')">×</button>
+        </div>
+      </div>
+      <div class="badges">${badgeHtml('強制險',c.comp)}${badgeHtml('任意險',c.vol)}</div>
+      ${c.note?`<div class="note">${c.note}</div>`:''}
+    </div>`).join('');
+}
+
+async function addClient(){
+  const name=document.getElementById('f-name').value.trim();
+  const plate=document.getElementById('f-plate').value.trim();
+  const comp=document.getElementById('f-comp').value;
+  const vol=document.getElementById('f-vol').value;
+  const note=document.getElementById('f-note').value.trim();
+  if(!name||!plate||!comp){toast('請填寫姓名、車牌和強制險到期日');return;}
+  const btn=document.getElementById('add-btn');
+  btn.disabled=true;btn.textContent='新增中...';
+  try{
+    await post({action:'add',name,plate,comp,vol,note});
+    ['f-name','f-plate','f-comp','f-vol','f-note'].forEach(id=>document.getElementById(id).value='');
+    toast('已新增 '+name);
+    await load();
+    switchTab('list');
+  }catch(e){toast('新增失敗，請重試');}
+  btn.disabled=false;btn.textContent='新增客戶';
+}
+
+function openEdit(id){
+  const c=clients.find(x=>x.id==id);if(!c)return;
+  ['id','name','plate','comp','vol','note'].forEach(f=>document.getElementById('e-'+f).value=c[f]||'');
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('edit-modal').classList.remove('open');}
+async function saveEdit(){
+  const id=document.getElementById('e-id').value;
+  const name=document.getElementById('e-name').value.trim();
+  const plate=document.getElementById('e-plate').value.trim();
+  const comp=document.getElementById('e-comp').value;
+  const vol=document.getElementById('e-vol').value;
+  const note=document.getElementById('e-note').value.trim();
+  if(!name||!plate||!comp){toast('請填寫必要欄位');return;}
+  try{await post({action:'update',id,name,plate,comp,vol,note});closeModal();toast('已更新');await load();}
+  catch(e){toast('更新失敗');}
+}
+
+function confirmDel(id,name){if(confirm(`確定要刪除「${name}」的資料嗎？`))delClient(id);}
+async function delClient(id){
+  try{await call({action:'delete',id});toast('已刪除');await load();}
+  catch(e){toast('刪除失敗');}
+}
+
+function fillSelect(){
+  const sel=document.getElementById('view-select');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">請選擇客戶</option>'+clients.map(c=>`<option value="${c.id}" ${c.id==cur?'selected':''}>${c.name}｜${c.plate}</option>`).join('');
+  if(cur)renderCV();
+}
+
+function renderCV(){
+  const id=document.getElementById('view-select').value;
+  const area=document.getElementById('cv-area');
+  if(!id){area.innerHTML='';return;}
+  const c=clients.find(x=>x.id==id);if(!c)return;
+  const d1=daysUntil(c.comp),d2=daysUntil(c.vol);
+  const s1=status(d1),s2=status(d2);
+  area.innerHTML=`
+    <div class="cv">
+      <div class="cv-header">
+        <div class="avatar">${c.name.slice(0,2)}</div>
+        <div><div class="cv-name">${c.name}</div><div class="cv-plate">${c.plate}</div></div>
+      </div>
+      <div class="cv-row"><span class="cv-label">強制險到期日</span><span class="cv-val">${fmtDate(c.comp)}</span></div>
+      <div class="cv-row"><span class="cv-label">強制險狀態</span><span class="cv-val" style="color:${statusColor(s1)}">${statusTxt(s1)}${d1&&d1>0?' ('+d1+'天)':''}</span></div>
+      <div class="cv-row"><span class="cv-label">任意險到期日</span><span class="cv-val">${fmtDate(c.vol)}</span></div>
+      <div class="cv-row"><span class="cv-label">任意險狀態</span><span class="cv-val" style="color:${statusColor(s2)}">${statusTxt(s2)}${d2&&d2>0?' ('+d2+'天)':''}</span></div>
+      ${c.note?`<div class="cv-row"><span class="cv-label">備註</span><span class="cv-val">${c.note}</span></div>`:''}
+      <div class="svc-box">我會在到期前 60 天、30 天、7 天主動通知你<br>讓你的保障不中斷</div>
+    </div>`;
+}
+
+load();
+</script>
+</body>
+</html>
