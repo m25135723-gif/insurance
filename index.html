@@ -165,7 +165,7 @@ input:focus,select:focus{outline:none;border-color:#999}
 <div class="toast" id="toast"></div>
 
 <script>
-const API='https://script.google.com/macros/s/AKfycbw2PSCqdWzUUIAsLhNvlBtRn1GDuUMk_68-QzIoNAojSm45DZvEjkUMR7gDNgJH5ig-cA/exec';
+const API='https://script.google.com/macros/s/AKfycbzQIJgM0BVH5-g7zVgGSabfvRw_-4KguP4exboqr7Txi3CyQKYaIrjjNsGsmjc4YspYnQ/exec';
 const COV_OPTIONS=['第三人','超額500','超額1000','超額2000','竊盜','駕駛人傷害','乘客體傷','刑事訴訟','道路救援'];
 let clients=[],filter='all';
 
@@ -365,7 +365,7 @@ async function addClient(){
   const btn=document.getElementById('add-btn');
   btn.disabled=true;btn.textContent='新增中...';
   try{
-    await post({action:'add',name,vehicles:JSON.stringify(vehicles),plate:vehicles[0].plate,comp:vehicles[0].comp,vol:vehicles[0].vol||'',note:''});
+    await post({action:'add',name,vehicles:JSON.stringify(vehicles)});
     document.getElementById('f-name').value='';
     initAddForm();
     toast('已新增 '+name);
@@ -392,7 +392,7 @@ async function saveEdit(){
   const vehicles=collectVehicles('edit-vehicles-form');
   if(!vehicles.length){toast('請至少填寫一台車輛資料');return;}
   try{
-    await post({action:'update',id,name,vehicles:JSON.stringify(vehicles),plate:vehicles[0].plate,comp:vehicles[0].comp,vol:vehicles[0].vol||'',note:''});
+    await post({action:'update',id,name,vehicles:JSON.stringify(vehicles)});
     closeModal();toast('已更新');await load();
   }catch(e){toast('更新失敗');}
 }
