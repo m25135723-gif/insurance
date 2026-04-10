@@ -19,6 +19,7 @@ h1{font-size:18px;font-weight:600;margin-bottom:1.5rem;color:#1a1a1a}
 .stat-label{font-size:11px;color:#888;margin-top:3px}
 .card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
 .section-hd{font-size:15px;font-weight:500;margin-bottom:1rem;color:#1a1a1a}
+.section-sm{font-size:13px;font-weight:500;margin-bottom:8px;color:#555}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg.full{grid-column:1/-1}
@@ -30,6 +31,17 @@ input:focus,select:focus{outline:none;border-color:#999}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 .btn-primary:hover{background:#333}
+.btn-sm{width:auto;padding:7px 14px;font-size:13px}
+.btn-danger{border-color:#E24B4A;color:#E24B4A}
+.btn-danger:hover{background:#FCEBEB}
+.coverage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.cov-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:13px;background:#fff;transition:all .15s}
+.cov-item.checked{background:#f0f0f0;border-color:#999;font-weight:500}
+.cov-item input[type=checkbox]{width:14px;height:14px;accent-color:#1a1a1a;flex-shrink:0}
+.vehicle-block{border:1px solid #e0e0e0;border-radius:10px;padding:1rem;margin-bottom:10px;background:#fafafa}
+.vehicle-block-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.vehicle-tag{font-size:13px;font-weight:500;color:#555}
+.divider{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 .filter-row{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
 .fbtn{padding:6px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#888;font-size:12px;cursor:pointer;font-family:inherit}
 .fbtn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
@@ -38,28 +50,35 @@ input:focus,select:focus{outline:none;border-color:#999}
 .cc.urgent{border-left:4px solid #E24B4A}
 .cc.warning{border-left:4px solid #EF9F27}
 .cc.ok{border-left:4px solid #1D9E75}
-.cc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.cc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .cc-name{font-size:15px;font-weight:500}
-.cc-plate{font-size:12px;color:#888;margin-top:2px;font-family:monospace}
 .cc-actions{display:flex;gap:4px}
 .icon-btn{background:none;border:none;color:#bbb;cursor:pointer;font-size:16px;padding:2px 5px}
 .icon-btn:hover{color:#1a1a1a}
-.badges{display:flex;gap:6px;flex-wrap:wrap}
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:8px;border:1px solid}
+.vehicle-row{padding:8px 0;border-bottom:1px solid #f5f5f5}
+.vehicle-row:last-child{border-bottom:none}
+.vr-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.vtype-tag{font-size:11px;padding:2px 7px;border-radius:6px;font-weight:500}
+.vtype-car{background:#e8f0fe;color:#1a73e8}
+.vtype-moto{background:#fce8b2;color:#b06000}
+.vr-plate{font-size:13px;font-weight:500;font-family:monospace}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:7px;border:1px solid}
 .b-urgent{background:#FCEBEB;color:#791F1F;border-color:#F09595}
 .b-warning{background:#FAEEDA;color:#633806;border-color:#FAC775}
 .b-ok{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
 .b-none{background:#f5f5f5;color:#aaa;border-color:#ddd}
 .dot{width:5px;height:5px;border-radius:50%;display:inline-block;flex-shrink:0}
 .d-urgent{background:#E24B4A}.d-warning{background:#EF9F27}.d-ok{background:#1D9E75}
-.note{margin-top:7px;font-size:12px;color:#888}
+.cov-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.cov-tag{font-size:11px;padding:2px 7px;background:#f5f5f5;border-radius:6px;color:#666;border:1px solid #e0e0e0}
 .empty{text-align:center;padding:2.5rem;color:#bbb;font-size:14px}
 .loading{text-align:center;padding:2.5rem;color:#888;font-size:14px}
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;border-radius:8px;padding:10px 20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:999}
 .toast.show{opacity:1}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:460px}
+.modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:520px;margin:auto}
 .modal-title{font-size:16px;font-weight:500;margin-bottom:1rem}
 .modal-actions{display:flex;gap:8px;margin-top:1rem}
 .modal-actions .btn{flex:1}
@@ -67,22 +86,24 @@ input:focus,select:focus{outline:none;border-color:#999}
 .cv-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid #f0f0f0}
 .avatar{width:46px;height:46px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;color:#1a73e8;flex-shrink:0}
 .cv-name{font-size:17px;font-weight:500}
-.cv-plate{font-size:13px;color:#888;margin-top:2px;font-family:monospace}
-.cv-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f5f5f5}
+.cv-vehicle{margin-bottom:1rem;padding:1rem;border:1px solid #f0f0f0;border-radius:10px}
+.cv-vehicle-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cv-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5}
 .cv-row:last-child{border-bottom:none}
 .cv-label{font-size:13px;color:#888}
 .cv-val{font-size:13px;font-weight:500}
 .svc-box{background:#f8f8f8;border-radius:10px;padding:1rem;margin-top:1rem;font-size:13px;color:#888;line-height:1.8;text-align:center}
+.search-box{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a;font-family:inherit;margin-bottom:1rem}
+.search-box:focus{outline:none;border-color:#999}
 </style>
 </head>
 <body>
 <div class="app">
   <h1>保險到期追蹤系統</h1>
-
   <div class="tabs">
     <button class="tab active" onclick="switchTab('list')">客戶名單</button>
     <button class="tab" onclick="switchTab('add')">新增客戶</button>
-    <button class="tab" onclick="switchTab('view')">客戶搜尋</button>
+    <button class="tab" onclick="switchTab('search')">客戶搜尋</button>
   </div>
 
   <div id="tab-list">
@@ -104,22 +125,23 @@ input:focus,select:focus{outline:none;border-color:#999}
     <div class="card">
       <p class="section-hd">新增客戶</p>
       <div class="form-grid">
-        <div class="fg"><label>客戶姓名</label><input id="f-name" type="text" placeholder="王小明"></div>
-        <div class="fg"><label>車牌號碼</label><input id="f-plate" type="text" placeholder="ABC-1234"></div>
-        <div class="fg"><label>強制險到期日</label><input id="f-comp" type="date"></div>
-        <div class="fg"><label>任意險到期日（選填）</label><input id="f-vol" type="date"></div>
-        <div class="fg full"><label>備註（選填）</label><input id="f-note" type="text" placeholder="例如：有超額責任險、家裡兩台車"></div>
+        <div class="fg full"><label>客戶姓名</label><input id="f-name" type="text" placeholder="王小明"></div>
       </div>
+      <hr class="divider">
+      <p class="section-sm">車輛資料</p>
+      <div id="vehicles-form"></div>
+      <button class="btn btn-sm" onclick="addVehicleForm()" style="margin-bottom:12px">＋ 新增車輛</button>
+      <hr class="divider">
       <button class="btn btn-primary" id="add-btn" onclick="addClient()">新增客戶</button>
     </div>
   </div>
 
-  <div id="tab-view" style="display:none">
+  <div id="tab-search" style="display:none">
     <div class="card">
-      <p class="section-hd">選擇客戶</p>
-      <select id="view-select" onchange="renderCV()"><option value="">請選擇客戶</option></select>
+      <p class="section-hd">客戶搜尋</p>
+      <input class="search-box" id="search-input" type="text" placeholder="輸入姓名或車牌搜尋..." oninput="renderSearch()">
     </div>
-    <div id="cv-area"></div>
+    <div id="search-results"></div>
   </div>
 </div>
 
@@ -127,12 +149,12 @@ input:focus,select:focus{outline:none;border-color:#999}
   <div class="modal">
     <p class="modal-title">編輯客戶資料</p>
     <div class="form-grid">
-      <div class="fg"><label>姓名</label><input id="e-name" type="text"></div>
-      <div class="fg"><label>車牌</label><input id="e-plate" type="text"></div>
-      <div class="fg"><label>強制險到期日</label><input id="e-comp" type="date"></div>
-      <div class="fg"><label>任意險到期日</label><input id="e-vol" type="date"></div>
-      <div class="fg full"><label>備註</label><input id="e-note" type="text"></div>
+      <div class="fg full"><label>客戶姓名</label><input id="e-name" type="text"></div>
     </div>
+    <hr class="divider">
+    <p class="section-sm">車輛資料</p>
+    <div id="edit-vehicles-form"></div>
+    <button class="btn btn-sm" onclick="addEditVehicleForm()" style="margin-bottom:12px">＋ 新增車輛</button>
     <input type="hidden" id="e-id">
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">取消</button>
@@ -144,24 +166,38 @@ input:focus,select:focus{outline:none;border-color:#999}
 
 <script>
 const API='https://script.google.com/macros/s/AKfycbw2PSCqdWzUUIAsLhNvlBtRn1GDuUMk_68-QzIoNAojSm45DZvEjkUMR7gDNgJH5ig-cA/exec';
+const COV_OPTIONS=['第三人','超額500','超額1000','超額2000','竊盜','駕駛人傷害','乘客體傷','刑事訴訟','道路救援'];
 let clients=[],filter='all';
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 function switchTab(tab){
-  ['list','add','view'].forEach((t,i)=>{
+  ['list','add','search'].forEach((t,i)=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
     document.querySelectorAll('.tab')[i].classList.toggle('active',t===tab);
   });
-  if(tab==='view')fillSelect();
+  if(tab==='add') initAddForm();
+  if(tab==='search') renderSearch();
 }
 
 const daysUntil=d=>d?Math.ceil((new Date(d)-new Date())/86400000):null;
 const status=d=>d===null?'none':d<=7?'urgent':d<=30?'warning':'ok';
-const cardStatus=c=>{const s=[daysUntil(c.comp),daysUntil(c.vol)].filter(d=>d!==null).map(status);return s.includes('urgent')?'urgent':s.includes('warning')?'warning':s.length?'ok':'none';};
 const fmtDate=d=>{if(!d)return'—';const dt=new Date(d);return`${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;};
 const statusTxt=s=>s==='urgent'?'即將到期':s==='warning'?'請注意':s==='ok'?'保障中':'未設定';
 const statusColor=s=>s==='urgent'?'#E24B4A':s==='warning'?'#EF9F27':s==='ok'?'#1D9E75':'#aaa';
+
+function clientUrgency(c){
+  const vehicles=parseVehicles(c);
+  const statuses=vehicles.flatMap(v=>[daysUntil(v.comp),daysUntil(v.vol)]).filter(d=>d!==null).map(status);
+  if(statuses.includes('urgent'))return'urgent';
+  if(statuses.includes('warning'))return'warning';
+  if(statuses.length)return'ok';
+  return'none';
+}
+
+function parseVehicles(c){
+  try{return JSON.parse(c.vehicles||'[]');}catch(e){return[];}
+}
 
 function badgeHtml(label,d){
   const days=daysUntil(d);
@@ -170,12 +206,90 @@ function badgeHtml(label,d){
   return`<span class="badge b-${s}"><span class="dot d-${s}"></span>${label}｜${days<=0?'已到期':days+'天後'}</span>`;
 }
 
+function covFormHtml(idx,v={}){
+  const cov=v.coverage||[];
+  return`<div class="vehicle-block" id="vblock-${idx}">
+    <div class="vehicle-block-header">
+      <span class="vehicle-tag">車輛 ${idx+1}</span>
+      <button class="btn btn-sm btn-danger" onclick="removeVehicleBlock(${idx})">移除</button>
+    </div>
+    <div class="form-grid">
+      <div class="fg">
+        <label>車種</label>
+        <select id="vtype-${idx}">
+          <option value="汽車" ${v.type==='汽車'?'selected':''}>汽車</option>
+          <option value="機車" ${v.type==='機車'?'selected':''}>機車</option>
+        </select>
+      </div>
+      <div class="fg"><label>車牌號碼</label><input id="vplate-${idx}" type="text" placeholder="ABC-1234" value="${v.plate||''}"></div>
+      <div class="fg"><label>強制險到期日</label><input id="vcomp-${idx}" type="date" value="${v.comp||''}"></div>
+      <div class="fg"><label>任意險到期日（選填）</label><input id="vvol-${idx}" type="date" value="${v.vol||''}"></div>
+    </div>
+    <p class="section-sm">任意險項目</p>
+    <div class="coverage-grid">
+      ${COV_OPTIONS.map(opt=>`
+        <label class="cov-item ${cov.includes(opt)?'checked':''}" onclick="toggleCov(this)">
+          <input type="checkbox" value="${opt}" ${cov.includes(opt)?'checked':''}>${opt}
+        </label>`).join('')}
+    </div>
+  </div>`;
+}
+
+function toggleCov(label){
+  const cb=label.querySelector('input');
+  cb.checked=!cb.checked;
+  label.classList.toggle('checked',cb.checked);
+}
+
+let vCount=0;
+function initAddForm(){
+  vCount=0;
+  document.getElementById('vehicles-form').innerHTML='';
+  addVehicleForm();
+}
+function addVehicleForm(){
+  const el=document.createElement('div');
+  el.innerHTML=covFormHtml(vCount);
+  document.getElementById('vehicles-form').appendChild(el.firstChild);
+  vCount++;
+}
+function removeVehicleBlock(idx){
+  const el=document.getElementById('vblock-'+idx);
+  if(el)el.remove();
+}
+
+let evCount=0;
+function initEditVehicleForm(vehicles){
+  evCount=vehicles.length;
+  document.getElementById('edit-vehicles-form').innerHTML=vehicles.map((v,i)=>covFormHtml(i,v)).join('');
+}
+function addEditVehicleForm(){
+  const container=document.getElementById('edit-vehicles-form');
+  const el=document.createElement('div');
+  el.innerHTML=covFormHtml(evCount);
+  container.appendChild(el.firstChild);
+  evCount++;
+}
+
+function collectVehicles(containerID){
+  const container=document.getElementById(containerID);
+  const blocks=container.querySelectorAll('.vehicle-block');
+  return Array.from(blocks).map(block=>{
+    const idx=block.id.replace('vblock-','');
+    const type=document.getElementById('vtype-'+idx)?.value||'汽車';
+    const plate=document.getElementById('vplate-'+idx)?.value.trim()||'';
+    const comp=document.getElementById('vcomp-'+idx)?.value||'';
+    const vol=document.getElementById('vvol-'+idx)?.value||'';
+    const coverage=Array.from(block.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.value);
+    return{type,plate,comp,vol,coverage};
+  }).filter(v=>v.plate&&v.comp);
+}
+
 async function call(params){
   const r=await fetch(API+'?'+new URLSearchParams(params));
   if(!r.ok)throw new Error(r.status);
   return r.json();
 }
-
 async function post(body){
   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
   if(!r.ok)throw new Error(r.status);
@@ -199,42 +313,61 @@ function setFilter(f,btn){
   render();
 }
 
+function vehicleRowHtml(v){
+  return`<div class="vehicle-row">
+    <div class="vr-top">
+      <span class="vtype-tag ${v.type==='汽車'?'vtype-car':'vtype-moto'}">${v.type}</span>
+      <span class="vr-plate">${v.plate}</span>
+    </div>
+    <div class="badges">
+      ${badgeHtml('強制險',v.comp)}
+      ${v.vol?badgeHtml('任意險',v.vol):''}
+    </div>
+    ${v.coverage&&v.coverage.length?`<div class="cov-tags">${v.coverage.map(c=>`<span class="cov-tag">${c}</span>`).join('')}</div>`:''}
+  </div>`;
+}
+
 function render(){
-  const urgent=clients.filter(c=>cardStatus(c)==='urgent').length;
-  const warning=clients.filter(c=>cardStatus(c)==='warning').length;
+  const urgent=clients.filter(c=>clientUrgency(c)==='urgent').length;
+  const warning=clients.filter(c=>clientUrgency(c)==='warning').length;
   document.getElementById('stats').innerHTML=`
     <div class="stat"><div class="stat-num">${clients.length}</div><div class="stat-label">總客戶數</div></div>
     <div class="stat"><div class="stat-num" style="color:#E24B4A">${urgent}</div><div class="stat-label">7天內到期</div></div>
     <div class="stat"><div class="stat-num" style="color:#EF9F27">${warning}</div><div class="stat-label">30天內到期</div></div>`;
-  const filtered=clients.filter(c=>filter==='all'||cardStatus(c)===filter).sort((a,b)=>(daysUntil(a.comp)??9999)-(daysUntil(b.comp)??9999));
+  const filtered=clients.filter(c=>filter==='all'||clientUrgency(c)===filter)
+    .sort((a,b)=>{
+      const da=Math.min(...parseVehicles(a).map(v=>daysUntil(v.comp)??9999));
+      const db=Math.min(...parseVehicles(b).map(v=>daysUntil(v.comp)??9999));
+      return da-db;
+    });
   const list=document.getElementById('client-list');
   if(!filtered.length){list.innerHTML=`<div class="empty">尚無${filter==='all'?'':'符合條件的'}客戶資料</div>`;return;}
-  list.innerHTML=filtered.map(c=>`
-    <div class="cc ${cardStatus(c)}">
+  list.innerHTML=filtered.map(c=>{
+    const vehicles=parseVehicles(c);
+    return`<div class="cc ${clientUrgency(c)}">
       <div class="cc-header">
-        <div><div class="cc-name">${c.name}</div><div class="cc-plate">${c.plate}</div></div>
+        <div class="cc-name">${c.name}</div>
         <div class="cc-actions">
           <button class="icon-btn" onclick="openEdit('${c.id}')">✎</button>
           <button class="icon-btn" style="color:#E24B4A" onclick="confirmDel('${c.id}','${c.name}')">×</button>
         </div>
       </div>
-      <div class="badges">${badgeHtml('強制險',c.comp)}${badgeHtml('任意險',c.vol)}</div>
-      ${c.note?`<div class="note">${c.note}</div>`:''}
-    </div>`).join('');
+      ${vehicles.map(vehicleRowHtml).join('')}
+    </div>`;
+  }).join('');
 }
 
 async function addClient(){
   const name=document.getElementById('f-name').value.trim();
-  const plate=document.getElementById('f-plate').value.trim();
-  const comp=document.getElementById('f-comp').value;
-  const vol=document.getElementById('f-vol').value;
-  const note=document.getElementById('f-note').value.trim();
-  if(!name||!plate||!comp){toast('請填寫姓名、車牌和強制險到期日');return;}
+  if(!name){toast('請填寫客戶姓名');return;}
+  const vehicles=collectVehicles('vehicles-form');
+  if(!vehicles.length){toast('請至少填寫一台車輛資料');return;}
   const btn=document.getElementById('add-btn');
   btn.disabled=true;btn.textContent='新增中...';
   try{
-    await post({action:'add',name,plate,comp,vol,note});
-    ['f-name','f-plate','f-comp','f-vol','f-note'].forEach(id=>document.getElementById(id).value='');
+    await post({action:'add',name,vehicles:JSON.stringify(vehicles),plate:vehicles[0].plate,comp:vehicles[0].comp,vol:vehicles[0].vol||'',note:''});
+    document.getElementById('f-name').value='';
+    initAddForm();
     toast('已新增 '+name);
     await load();
     switchTab('list');
@@ -244,20 +377,24 @@ async function addClient(){
 
 function openEdit(id){
   const c=clients.find(x=>x.id==id);if(!c)return;
-  ['id','name','plate','comp','vol','note'].forEach(f=>document.getElementById('e-'+f).value=c[f]||'');
+  document.getElementById('e-id').value=c.id;
+  document.getElementById('e-name').value=c.name;
+  const vehicles=parseVehicles(c);
+  evCount=vehicles.length;
+  initEditVehicleForm(vehicles);
   document.getElementById('edit-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('edit-modal').classList.remove('open');}
 async function saveEdit(){
   const id=document.getElementById('e-id').value;
   const name=document.getElementById('e-name').value.trim();
-  const plate=document.getElementById('e-plate').value.trim();
-  const comp=document.getElementById('e-comp').value;
-  const vol=document.getElementById('e-vol').value;
-  const note=document.getElementById('e-note').value.trim();
-  if(!name||!plate||!comp){toast('請填寫必要欄位');return;}
-  try{await post({action:'update',id,name,plate,comp,vol,note});closeModal();toast('已更新');await load();}
-  catch(e){toast('更新失敗');}
+  if(!name){toast('請填寫客戶姓名');return;}
+  const vehicles=collectVehicles('edit-vehicles-form');
+  if(!vehicles.length){toast('請至少填寫一台車輛資料');return;}
+  try{
+    await post({action:'update',id,name,vehicles:JSON.stringify(vehicles),plate:vehicles[0].plate,comp:vehicles[0].comp,vol:vehicles[0].vol||'',note:''});
+    closeModal();toast('已更新');await load();
+  }catch(e){toast('更新失敗');}
 }
 
 function confirmDel(id,name){if(confirm(`確定要刪除「${name}」的資料嗎？`))delClient(id);}
@@ -266,35 +403,43 @@ async function delClient(id){
   catch(e){toast('刪除失敗');}
 }
 
-function fillSelect(){
-  const sel=document.getElementById('view-select');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">請選擇客戶</option>'+clients.map(c=>`<option value="${c.id}" ${c.id==cur?'selected':''}>${c.name}｜${c.plate}</option>`).join('');
-  if(cur)renderCV();
-}
-
-function renderCV(){
-  const id=document.getElementById('view-select').value;
-  const area=document.getElementById('cv-area');
-  if(!id){area.innerHTML='';return;}
-  const c=clients.find(x=>x.id==id);if(!c)return;
-  const d1=daysUntil(c.comp),d2=daysUntil(c.vol);
-  const s1=status(d1),s2=status(d2);
-  area.innerHTML=`
-    <div class="cv">
+function renderSearch(){
+  const q=(document.getElementById('search-input')?.value||'').trim().toLowerCase();
+  const results=q?clients.filter(c=>{
+    if(c.name.toLowerCase().includes(q))return true;
+    return parseVehicles(c).some(v=>v.plate.toLowerCase().includes(q));
+  }):[];
+  const area=document.getElementById('search-results');
+  if(!q){area.innerHTML='';return;}
+  if(!results.length){area.innerHTML='<div class="empty">找不到符合的客戶</div>';return;}
+  area.innerHTML=results.map(c=>{
+    const vehicles=parseVehicles(c);
+    return`<div class="cv" style="margin-bottom:1rem">
       <div class="cv-header">
         <div class="avatar">${c.name.slice(0,2)}</div>
-        <div><div class="cv-name">${c.name}</div><div class="cv-plate">${c.plate}</div></div>
+        <div><div class="cv-name">${c.name}</div></div>
       </div>
-      <div class="cv-row"><span class="cv-label">強制險到期日</span><span class="cv-val">${fmtDate(c.comp)}</span></div>
-      <div class="cv-row"><span class="cv-label">強制險狀態</span><span class="cv-val" style="color:${statusColor(s1)}">${statusTxt(s1)}${d1&&d1>0?' ('+d1+'天)':''}</span></div>
-      <div class="cv-row"><span class="cv-label">任意險到期日</span><span class="cv-val">${fmtDate(c.vol)}</span></div>
-      <div class="cv-row"><span class="cv-label">任意險狀態</span><span class="cv-val" style="color:${statusColor(s2)}">${statusTxt(s2)}${d2&&d2>0?' ('+d2+'天)':''}</span></div>
-      ${c.note?`<div class="cv-row"><span class="cv-label">備註</span><span class="cv-val">${c.note}</span></div>`:''}
+      ${vehicles.map(v=>{
+        const d1=daysUntil(v.comp),d2=daysUntil(v.vol);
+        const s1=status(d1),s2=status(d2);
+        return`<div class="cv-vehicle">
+          <div class="cv-vehicle-header">
+            <span class="vtype-tag ${v.type==='汽車'?'vtype-car':'vtype-moto'}">${v.type}</span>
+            <span style="font-size:14px;font-weight:500;font-family:monospace">${v.plate}</span>
+          </div>
+          <div class="cv-row"><span class="cv-label">強制險到期日</span><span class="cv-val">${fmtDate(v.comp)}</span></div>
+          <div class="cv-row"><span class="cv-label">強制險狀態</span><span class="cv-val" style="color:${statusColor(s1)}">${statusTxt(s1)}${d1&&d1>0?' ('+d1+'天)':''}</span></div>
+          ${v.vol?`<div class="cv-row"><span class="cv-label">任意險到期日</span><span class="cv-val">${fmtDate(v.vol)}</span></div>
+          <div class="cv-row"><span class="cv-label">任意險狀態</span><span class="cv-val" style="color:${statusColor(s2)}">${statusTxt(s2)}${d2&&d2>0?' ('+d2+'天)':''}</span></div>`:''}
+          ${v.coverage&&v.coverage.length?`<div class="cv-row"><span class="cv-label">保障內容</span><div class="cov-tags" style="justify-content:flex-end">${v.coverage.map(cv=>`<span class="cov-tag">${cv}</span>`).join('')}</div></div>`:''}
+        </div>`;
+      }).join('')}
       <div class="svc-box">我會在到期前 60 天、30 天、7 天主動通知你<br>讓你的保障不中斷</div>
     </div>`;
+  }).join('');
 }
 
+initAddForm();
 load();
 </script>
 </body>
