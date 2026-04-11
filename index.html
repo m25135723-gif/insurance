@@ -180,7 +180,12 @@ function switchTab(tab){
   if(tab==='search') renderSearch();
 }
 
-const daysUntil=d=>d?Math.ceil((new Date(d)-new Date())/86400000):null;
+function daysUntil(d){
+  if(!d)return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  const exp=new Date(d);exp.setHours(0,0,0,0);
+  return Math.round((exp-today)/86400000);
+}
 const status=d=>d===null?'none':d<=7?'urgent':d<=30?'warning':'ok';
 const fmtDate=d=>{if(!d)return'—';const dt=new Date(d);return`${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;};
 const statusTxt=s=>s==='urgent'?'即將到期':s==='warning'?'請注意':s==='ok'?'保障中':'未設定';
@@ -203,7 +208,8 @@ function badgeHtml(label,d){
   const days=daysUntil(d);
   if(!d)return`<span class="badge b-none">${label} 未填</span>`;
   const s=status(days);
-  return`<span class="badge b-${s}"><span class="dot d-${s}"></span>${label}｜${days<=0?'已到期':days+'天後'}</span>`;
+  const dayTxt=days<=0?'已到期':days+'天後';
+  return`<span class="badge b-${s}"><span class="dot d-${s}"></span>${label}｜${fmtDate(d)}｜${dayTxt}</span>`;
 }
 
 function covFormHtml(idx,v={}){
@@ -216,14 +222,14 @@ function covFormHtml(idx,v={}){
     <div class="form-grid">
       <div class="fg">
         <label>車種</label>
-        <select id="vtype-${idx}">
+        <select class="vtype-select">
           <option value="汽車" ${v.type==='汽車'?'selected':''}>汽車</option>
           <option value="機車" ${v.type==='機車'?'selected':''}>機車</option>
         </select>
       </div>
-      <div class="fg"><label>車牌號碼</label><input id="vplate-${idx}" type="text" placeholder="ABC-1234" value="${v.plate||''}"></div>
-      <div class="fg"><label>強制險到期日</label><input id="vcomp-${idx}" type="date" value="${v.comp||''}"></div>
-      <div class="fg"><label>任意險到期日（選填）</label><input id="vvol-${idx}" type="date" value="${v.vol||''}"></div>
+      <div class="fg"><label>車牌號碼</label><input class="vplate-input" type="text" placeholder="ABC-1234" value="${v.plate||''}"></div>
+      <div class="fg"><label>強制險到期日</label><input class="vcomp-input" type="date" value="${v.comp||''}"></div>
+      <div class="fg"><label>任意險到期日（選填）</label><input class="vvol-input" type="date" value="${v.vol||''}"></div>
     </div>
     <p class="section-sm">任意險項目</p>
     <div class="coverage-grid">
@@ -275,11 +281,10 @@ function collectVehicles(containerID){
   const container=document.getElementById(containerID);
   const blocks=container.querySelectorAll('.vehicle-block');
   return Array.from(blocks).map(block=>{
-    const idx=block.id.replace('vblock-','');
-    const type=document.getElementById('vtype-'+idx)?.value||'汽車';
-    const plate=document.getElementById('vplate-'+idx)?.value.trim()||'';
-    const comp=document.getElementById('vcomp-'+idx)?.value||'';
-    const vol=document.getElementById('vvol-'+idx)?.value||'';
+    const type=block.querySelector('.vtype-select')?.value||'汽車';
+    const plate=block.querySelector('.vplate-input')?.value.trim()||'';
+    const comp=block.querySelector('.vcomp-input')?.value||'';
+    const vol=block.querySelector('.vvol-input')?.value||'';
     const coverage=Array.from(block.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.value);
     return{type,plate,comp,vol,coverage};
   }).filter(v=>v.plate&&v.comp);
