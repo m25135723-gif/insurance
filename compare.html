@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>車險方案比較表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+.caseRow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.caseRow select{width:auto;min-width:200px}
+.caseRow input{width:auto;min-width:200px}
+/* edit */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);font-weight:700;box-shadow:inset 0 -3px 0 var(--ink)}
+.form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.form h3{margin:18px 0 8px;font-size:15px;color:var(--ink)}
+.form h3:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 14px}
+.grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.grid label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--text)}
+.grid label.chk input{width:22px;min-height:22px;height:22px}
+.grid .full{grid-column:1/-1}
+.hint{font-size:13px;color:var(--muted);margin-top:10px}
+.custom{margin-top:20px;border-top:2px solid var(--line);padding-top:14px}
+.custom h3{margin:0 0 6px}
+.cf-list{display:flex;flex-direction:column;gap:6px;margin:8px 0 12px}
+.cf-item{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:14px}
+.cf-item .bar button{min-height:34px;padding:4px 10px;font-size:13px}
+.cf-add{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end}
+.cf-add label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.tag{font-size:12px;color:var(--muted);font-weight:400}
+@media (max-width:640px){.cf-add{grid-template-columns:1fr 1fr}}
+/* compare */
+.gate{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:18px}
+.gcard{background:var(--panel);border:1px solid var(--line);border-top:5px solid var(--line);border-radius:10px;padding:12px 14px}
+.gcard.ok{border-top-color:var(--pass)}
+.gcard.no{border-top-color:var(--fail)}
+.gname{font-weight:700;font-size:17px;color:var(--ink)}
+.gdoc{font-size:13px;color:var(--muted)}
+.gprice{font-size:28px;font-weight:700;margin:6px 0 2px}
+.gprice small{font-size:14px;font-weight:400;color:var(--muted)}
+.gdiff{font-size:14px;color:var(--muted);min-height:1.5em}
+.checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tableWrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;font-size:15px}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--sticky);min-width:150px;z-index:1}
+thead th{background:var(--ink);color:var(--paper);font-weight:500;position:sticky;top:0}
+thead th:first-child{background:var(--ink);z-index:2}
+tr.sec td{background:var(--sticky);color:var(--ink);font-weight:700;text-align:left;font-size:14px}
+tr.sec td:first-child{background:var(--sticky)}
+td.mk-k{background:var(--mk-k);font-weight:700}
+td.mk-w{background:var(--mk-w);font-weight:700}
+tbody td{cursor:pointer}
+tr.sec td{cursor:default}
+td.lbl-k{box-shadow:inset 4px 0 0 var(--ink)}
+td.lbl-w{box-shadow:inset 4px 0 0 var(--warn)}
+details.th{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;margin-bottom:12px}
+details.th summary{cursor:pointer;color:var(--ink);font-weight:700;min-height:32px;display:flex;align-items:center}
+.sw.w{background:var(--mk-w)}
+td.none{color:var(--muted)}
+td.txt{text-align:left;font-size:14px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:10px 2px 0}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px;background:var(--hi);border:1px solid var(--line)}
+.opts{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin:0 0 10px}
+.opts input{width:20px;min-height:20px;height:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <a class="back" href="index.html">‹ 工具箱</a>
+      <h1>車險方案比較表</h1>
+      <div class="sub" id="caseSub">依原報價呈現，差異另行註明</div>
+    </div>
+    <div class="seg" role="group" aria-label="模式">
+      <button id="mEdit" aria-pressed="true">填寫資料</button>
+      <button id="mShow" aria-pressed="false">客戶檢視</button>
+    </div>
+  </header>
+
+  <div class="caseRow" id="caseRow">
+    <select id="caseSel" aria-label="選擇案件"></select>
+    <input id="caseName" placeholder="案件名稱，例如：王先生 Kuga 續保" aria-label="案件名稱">
+    <button id="newCase">新增空白案件</button>
+    <button id="dupCase">複製成新案件</button>
+    <button id="delCase">刪除此案件</button>
+  </div>
+
+  <section id="editView">
+    <details class="th" id="thBox"><summary>基本門檻設定（所有案件共用）</summary><div class="grid" id="thGrid" style="margin:8px 0 6px"></div></details>
+    <div class="tabs" id="planTabs"></div>
+    <div class="form" id="planForm"></div>
+    <p class="hint">保額單位為「萬」，保費單位為「元」。沒有投保的項目留空即可，在客戶檢視會顯示為「—」。資料只存在這台裝置的瀏覽器裡，客戶決定後可以刪除案件。另計保費會併入總保費顯示。</p>
+  </section>
+
+  <section id="showView" hidden>
+    <div class="gate" id="gate"></div>
+    <div class="opts" style="justify-content:space-between;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="onlyDiff"> 只顯示各方案有差異的項目</label>
+      <button id="clearMarks">清除所有標記</button>
+    </div>
+    <div class="tableWrap"><table id="cmp"></table></div>
+    <div class="legend">
+      <span><span class="sw"></span>重點</span>
+      <span><span class="sw w"></span>留意</span>
+      <span>點格子切換標記，點左側項目名稱標記整列</span>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const MAX_PLANS = 5;
+const FIELDS = [
+  {sec:'基本資料'},
+  {k:'company',l:'保險公司',t:'text'},
+  {k:'docType',l:'文件狀態',t:'select',o:['正式報價','要保書（待核保）','試算']},
+  {k:'start',l:'保險起日',t:'date'},
+  {k:'end',l:'保險迄日',t:'date'},
+  {k:'quoteValid',l:'報價有效期限',t:'date'},
+  {k:'premium',l:'任意險保費（元）',t:'num',unit:'元'},
+  {k:'premiumOther',l:'另計保費（元）',t:'num',unit:'元',ph:'例如另購的駕駛人傷害險'},
+  {k:'compulsory',l:'強制險',t:'select',o:['未含（另行投保）','已含','未註明']},
+  {sec:'車輛與核保條件'},
+  {k:'carCode',l:'車型／代號',t:'text'},
+  {k:'vehicleClass',l:'車種',t:'text'},
+  {k:'depreciation',l:'折舊條款',t:'text'},
+  {k:'designatedDriver',l:'約定駕駛人條款',t:'bool'},
+  {sec:'車體損失'},
+  {k:'bodyType',l:'車體險種',t:'select',o:['乙式','甲式','丙式','未投保']},
+  {k:'replaceVal',l:'重置價格（萬）',t:'num',unit:'萬'},
+  {k:'bodySum',l:'車體保額（萬）',t:'num',unit:'萬'},
+  {k:'deductible',l:'自負額',t:'text'},
+  {k:'permitUse',l:'許可使用免追償',t:'bool'},
+  {k:'noDep',l:'全損免折舊',t:'bool'},
+  {sec:'第三人責任'},
+  {k:'tpPerson',l:'傷害 每人（萬）',t:'num',unit:'萬'},
+  {k:'tpAccident',l:'傷害 每事故（萬）',t:'num',unit:'萬'},
+  {k:'tpProperty',l:'財損 每事故（萬）',t:'num',unit:'萬'},
+  {sec:'超額責任'},
+  {k:'excess',l:'超額責任保額（萬）',t:'num',unit:'萬'},
+  {k:'excessNote',l:'超額條件說明',t:'text',ph:'例如：含乘客／不含酒償／期間累計'},
+  {sec:'乘客與駕駛人'},
+  {k:'passPerson',l:'乘客體傷 每人（萬）',t:'num',unit:'萬'},
+  {k:'passAccident',l:'乘客體傷 每事故（萬）',t:'num',unit:'萬'},
+  {k:'driverDisab',l:'駕駛人 失能或身故（萬）',t:'num',unit:'萬'},
+  {k:'driverDaily',l:'駕駛人 住院日額',t:'text'},
+  {k:'driverMed',l:'駕駛人 傷害醫療（萬）',t:'num',unit:'萬'},
+  {sec:'其他附加'},
+  {k:'comfort',l:'慰問金',t:'text'},
+  {k:'lawyer',l:'律師費（萬）',t:'num',unit:'萬'},
+  {k:'roadside',l:'道路救援',t:'text'},
+  {k:'otherAdd',l:'其他附加條款',t:'text'},
+  {sec:'差異註記'},
+  {k:'notes',l:'需向客戶說明的差異',t:'area',ph:'例如：期間未滿一年、車型代號不同、待核保'}
+];
+const TH_DEF={tpPerson:300,tpProperty:50,excess:1000};
+const SECS=FIELDS.filter(f=>f.sec).map(f=>f.sec).filter(s=>s!=='差異註記');
+const UNITS={'萬':'萬','元':'元','text':'文字'};
+// 自訂項目：store.fields 是固定項目（所有案件都有），case.extra 是只屬於這個案件的項目
+function cfDef(c,scope){return {k:'x:'+c.id,id:c.id,custom:scope,l:c.l+(c.unit==='text'?'':'（'+c.unit+'）'),t:c.unit==='text'?'text':'num',unit:c.unit==='text'?undefined:c.unit,grp:c.sec};}
+function buildFields(cs){
+  const extra=[...(store.fields||[]).map(c=>cfDef(c,'global')),...((cs&&cs.extra)||[]).map(c=>cfDef(c,'case'))];
+  const out=[];let sec=null;
+  const flushSec=s=>extra.filter(e=>(SECS.includes(e.grp)?e.grp:'其他附加')===s).forEach(e=>out.push(e));
+  FIELDS.forEach(f=>{if(f.sec){if(sec)flushSec(sec);sec=f.sec;}out.push(f);});
+  if(sec)flushSec(sec);
+  return out;}
+function getV(p,fd){return fd.custom?((p.x||{})[fd.id]??''):p[fd.k];}
+function setV(p,fd,v){if(fd.custom){if(!p.x)p.x={};p.x[fd.id]=v;}else p[fd.k]=v;}
+
+function blankPlan(i){const p={};FIELDS.forEach(f=>{if(f.k)p[f.k]=f.t==='bool'?false:(f.t==='select'?f.o[0]:'')});p.company='方案'+'ABCDE'[i];return p;}
+
+const KEY='carCompare.v1';
+let store={cases:{},current:null};
+function load(){try{const s=localStorage.getItem(KEY);if(s)store=JSON.parse(s);}catch(e){}
+  if(!store.cases)store.cases={};
+  if(!Object.keys(store.cases).length){const id=uid();store.cases[id]={name:'新案件',marks:{},plans:[blankPlan(0),blankPlan(1)]};store.current=id;}
+  if(!Array.isArray(store.fields))store.fields=[];
+  if(!store.th)store.th={...TH_DEF};
+  Object.values(store.cases).forEach(c=>{if(!c.marks)c.marks={};if(!Array.isArray(c.extra))c.extra=[];});
+  if(!store.cases[store.current])store.current=Object.keys(store.cases)[0];
+  save();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+function uid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+const cur=()=>store.cases[store.current];
+
+let mode='edit', active=0;
+const $=id=>document.getElementById(id);
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>el.classList.remove('show'),1600);}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function renderTh(){
+  const T=store.th;
+  $('thGrid').innerHTML=[['tpPerson','第三人傷害 每人至少（萬）'],['tpProperty','財損 每事故至少（萬）'],['excess','超額責任至少（萬）']]
+    .map(([k,l])=>`<label>${l}<input type="number" inputmode="decimal" data-th="${k}" value="${T[k]}"></label>`).join('')
+    +'<label class="full" style="color:var(--muted)">車體險需為乙式或甲式。門檻只用來標示是否達到，不代表推薦。</label>';
+  $('thGrid').querySelectorAll('[data-th]').forEach(el=>el.oninput=()=>{store.th[el.dataset.th]=el.value===''?0:Number(el.value);save();});
+}
+
+function renderCases(){
+  const sel=$('caseSel');sel.innerHTML='';
+  Object.entries(store.cases).forEach(([id,c])=>{const o=document.createElement('option');o.value=id;o.textContent=c.name||'未命名案件';if(id===store.current)o.selected=true;sel.appendChild(o);});
+  $('caseName').value=cur().name||'';
+  $('caseSub').textContent=(cur().name||'未命名案件')+'　｜　依原報價呈現，差異另行註明';
+}
+
+function renderTabs(){
+  const t=$('planTabs');t.innerHTML='';
+  cur().plans.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.company||('方案'+(i+1));b.setAttribute('aria-pressed',i===active);b.onclick=()=>{active=i;renderEdit();};t.appendChild(b);});
+  if(cur().plans.length<MAX_PLANS){const b=document.createElement('button');b.textContent='＋ 新增方案';b.onclick=()=>{cur().plans.push(blankPlan(cur().plans.length));active=cur().plans.length-1;save();renderEdit();};t.appendChild(b);}
+}
+
+function renderEdit(){
+  renderTabs();
+  const p=cur().plans[active];const f=$('planForm');
+  const FL=buildFields(cur());
+  let h='';let open=false;
+  FL.forEach(fd=>{
+    if(fd.sec){if(open)h+='</div>';h+=`<h3>${fd.sec}</h3><div class="grid">`;open=true;return;}
+    const v=getV(p,fd)??(fd.t==='bool'?false:'');
+    if(fd.t==='bool')h+=`<label class="chk"><input type="checkbox" data-k="${fd.k}" ${v?'checked':''}>${fd.l}</label>`;
+    else if(fd.t==='select')h+=`<label>${fd.l}<select data-k="${fd.k}">${fd.o.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select></label>`;
+    else if(fd.t==='area')h+=`<label class="full">${fd.l}<textarea rows="3" data-k="${fd.k}" placeholder="${fd.ph||''}">${esc(v)}</textarea></label>`;
+    else h+=`<label>${esc(fd.l)}${fd.custom==='case'?' <span class="tag">本案</span>':''}<input type="${fd.t==='num'?'number':fd.t}" ${fd.t==='num'?'inputmode="decimal" step="any"':''} data-k="${fd.k}" value="${esc(v)}" placeholder="${fd.ph||''}"></label>`;
+  });
+  if(open)h+='</div>';
+  h+=`<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">${cur().plans.length>1?'<button id="rmPlan">移除這個方案</button>':''}</div>`;
+  h+=customPanel();
+  f.innerHTML=h;
+  bindCustom();
+  f.querySelectorAll('[data-k]').forEach(el=>{
+    const ev=el.tagName==='SELECT'||el.type==='checkbox'?'change':'input';
+    el.addEventListener(ev,()=>{const k=el.dataset.k;const fd=FL.find(x=>x.k===k);
+      setV(p,fd,el.type==='checkbox'?el.checked:(fd.t==='num'?(el.value===''?'':Number(el.value)):el.value));
+      save();if(k==='company')renderTabs();});
+  });
+  const rm=$('rmPlan');if(rm)rm.onclick=()=>{if(!confirm('確定移除「'+(p.company||'此方案')+'」？'))return;cur().plans.splice(active,1);
+    Object.keys(cur().marks).forEach(k=>{if(k.startsWith('c:'))delete cur().marks[k];});
+    active=Math.max(0,active-1);save();renderEdit();};
+}
+
+function customPanel(){
+  const row=(c,scope)=>`<div class="cf-item"><span>${esc(c.l)} <span class="tag">${UNITS[c.unit]}．${esc(c.sec)}</span></span><div class="bar">
+    ${scope==='case'?`<button data-cf-up="${c.id}">設為固定項目</button><button data-cf-rm="${c.id}">刪除</button>`:`<button data-cf-rmg="${c.id}">取消固定</button>`}</div></div>`;
+  const ex=cur().extra||[],gl=store.fields||[];
+  return `<div class="custom"><h3>自訂項目</h3>
+    <p class="hint" style="margin-top:0">報價單有、但表格裡沒有的項目，先加在這個案件；常用的再按「設為固定項目」，之後每個案件都會出現。</p>
+    ${ex.length?'<div class="sub">只在這個案件</div><div class="cf-list">'+ex.map(c=>row(c,'case')).join('')+'</div>':''}
+    ${gl.length?'<div class="sub">固定項目（所有案件）</div><div class="cf-list">'+gl.map(c=>row(c,'global')).join('')+'</div>':''}
+    <div class="cf-add">
+      <label>項目名稱<input id="cfName" placeholder="例如：颱風洪水附加險"></label>
+      <label>填寫方式<select id="cfUnit"><option value="萬">金額（萬）</option><option value="元">金額（元）</option><option value="text">文字</option></select></label>
+      <label>放在哪一區<select id="cfSec">${SECS.map(s=>`<option ${s==='其他附加'?'selected':''}>${s}</option>`).join('')}</select></label>
+      <button id="cfAdd">加入這個案件</button>
+    </div></div>`;}
+function bindCustom(){
+  const f=$('planForm');
+  const add=$('cfAdd');if(add)add.onclick=()=>{const l=$('cfName').value.trim();if(!l){toast('請輸入項目名稱');return;}
+    const all=[...store.fields,...cur().extra];if(all.some(c=>c.l===l)){toast('已經有同名的項目');return;}
+    cur().extra.push({id:'f'+Date.now().toString(36),l,unit:$('cfUnit').value,sec:$('cfSec').value});save();renderEdit();toast('已加入「'+l+'」');};
+  f.querySelectorAll('[data-cf-up]').forEach(b=>b.onclick=()=>{const i=cur().extra.findIndex(c=>c.id===b.dataset.cfUp);const c=cur().extra.splice(i,1)[0];
+    store.fields.push(c);save();renderEdit();toast('「'+c.l+'」已設為固定項目');});
+  f.querySelectorAll('[data-cf-rm]').forEach(b=>b.onclick=()=>{const c=cur().extra.find(x=>x.id===b.dataset.cfRm);
+    if(!confirm('刪除「'+c.l+'」和各方案填的內容？'))return;cur().extra=cur().extra.filter(x=>x!==c);
+    cur().plans.forEach(p=>{if(p.x)delete p.x[c.id];});Object.keys(cur().marks).forEach(k=>{if(k.includes('x:'+c.id))delete cur().marks[k];});save();renderEdit();});
+  f.querySelectorAll('[data-cf-rmg]').forEach(b=>b.onclick=()=>{const c=store.fields.find(x=>x.id===b.dataset.cfRmg);
+    if(!confirm('「'+c.l+'」不再是固定項目，會移回這個案件；其他案件不再顯示這一項。'))return;
+    store.fields=store.fields.filter(x=>x!==c);cur().extra.push(c);save();renderEdit();});
+}
+
+function days(p){if(!p.start||!p.end)return null;const d=(new Date(p.end)-new Date(p.start))/864e5;return d>0?Math.round(d):null;}
+function num(v){return v===''||v==null||isNaN(v)?null:Number(v);}
+function total(p){const a=num(p.premium),b=num(p.premiumOther);if(a==null&&b==null)return null;return (a||0)+(b||0);}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function gate(p){const T=store.th;
+  return [
+    {l:'車體乙式以上',ok:p.bodyType==='甲式'||p.bodyType==='乙式'},
+    {l:`第三人每人 ≥${T.tpPerson}萬`,ok:(num(p.tpPerson)||0)>=T.tpPerson&&num(p.tpPerson)>0},
+    {l:`財損 ≥${T.tpProperty}萬`,ok:(num(p.tpProperty)||0)>=T.tpProperty&&num(p.tpProperty)>0},
+    {l:`超額 ≥${T.excess}萬`,ok:(num(p.excess)||0)>=T.excess&&num(p.excess)>0}
+  ];}
+function fmt(v,unit){if(unit==='元')return v.toLocaleString('zh-TW')+' 元';return (Number.isInteger(v)?v.toLocaleString('zh-TW'):v)+' 萬';}
+
+function renderShow(){
+  const plans=cur().plans, M=cur().marks, td0=today();
+  const tots=plans.map(total).filter(v=>v!=null);const minP=tots.length?Math.min(...tots):null;
+  $('gate').innerHTML=plans.map(p=>{
+    const g=gate(p);const all=g.every(x=>x.ok);const d=days(p);const pr=total(p);
+    const diff=pr!=null&&minP!=null?(pr===minP?'目前報價最低':'比最低多 '+(pr-minP).toLocaleString('zh-TW')+' 元'):'';
+    const extra=[];
+    if(p.quoteValid){if(p.quoteValid<td0)extra.push('<span class="pill w">報價已過期</span>');else if(p.quoteValid===td0)extra.push('<span class="pill w">報價今天到期</span>');}
+    if(d&&(d<364||d>366))extra.push(`<span class="pill w">期間 ${d} 天</span>`);
+    if(p.docType!=='正式報價')extra.push(`<span class="pill w">${esc(p.docType)}</span>`);
+    return `<div class="gcard ${all?'ok':'no'}">
+      <div class="gname">${esc(p.company||'未命名')}</div>
+      <div class="gdoc">${esc(p.start||'—')} 至 ${esc(p.end||'—')}${d?`（${d} 天）`:''}</div>
+      <div class="gprice">${pr!=null?pr.toLocaleString('zh-TW'):'—'} <small>元${num(p.premiumOther)?'（含另計 '+num(p.premiumOther).toLocaleString('zh-TW')+'）':''}</small></div>
+      <div class="gdiff">${diff}</div>
+      <div class="checks">${g.map(x=>`<span class="pill ${x.ok?'y':'n'}">${x.ok?'✓':'✗'} ${x.l}</span>`).join('')}${extra.join('')}</div>
+    </div>`;}).join('');
+
+  const only=$('onlyDiff').checked;
+  let h='<thead><tr><th>項目</th>'+plans.map(p=>`<th>${esc(p.company||'')}</th>`).join('')+'</tr></thead><tbody>';
+  let secBuf='',rowsInSec=0;
+  const flush=()=>{if(rowsInSec)h+=secBuf;secBuf='';rowsInSec=0;};
+  const addRow=(key,label,cells,same)=>{
+    if(only&&same&&!M['r:'+key])return;
+    const rm=M['r:'+key];
+    let row=`<tr><td data-m="r:${key}" class="${rm?'lbl-'+rm:''}">${label}</td>`;
+    cells.forEach((c,i)=>{const mk=M['c:'+key+':'+i]||rm;row+=`<td data-m="c:${key}:${i}" class="${c.cls} ${mk?'mk-'+mk:''}">${c.html}</td>`;});
+    secBuf+=row+'</tr>';rowsInSec++;};
+  buildFields(cur()).forEach(fd=>{
+    if(fd.sec){flush();secBuf=`<tr class="sec"><td colspan="${plans.length+1}">${fd.sec}</td></tr>`;return;}
+    if(fd.k==='company')return;
+    if(fd.k==='start'){
+      const c=plans.map(p=>{const d=days(p);return {cls:'txt',html:p.start?`${esc(p.start)}<br>至 ${esc(p.end)}${d?`（${d} 天）`:''}`:'—'};});
+      addRow('period','保險期間',c,plans.every(p=>p.start===plans[0].start&&p.end===plans[0].end));return;}
+    if(fd.k==='end')return;
+    const vals=plans.map(p=>getV(p,fd));
+    const norm=vals.map(v=>fd.t==='num'?num(v):(fd.t==='bool'?!!v:String(v||'').trim()));
+    const same=norm.every(v=>JSON.stringify(v)===JSON.stringify(norm[0]));
+    const cells=norm.map(v=>{
+      if(fd.t==='num')return v==null?{cls:'none',html:'—'}:{cls:'',html:fmt(v,fd.unit)};
+      if(fd.t==='bool')return v?{cls:'',html:'有'}:{cls:'none',html:'—'};
+      return v?{cls:(fd.t==='area'||String(v).length>8)?'txt':'',html:esc(v)}:{cls:'none',html:'—'};});
+    addRow(fd.k,esc(fd.l.replace(/（[萬元]）/,'')),cells,same);
+    if(fd.k==='premiumOther'){
+      const tv=plans.map(total);
+      addRow('total','總保費',tv.map(v=>v==null?{cls:'none',html:'—'}:{cls:'',html:'<b>'+fmt(v,'元')+'</b>'}),tv.every(v=>v===tv[0]));}
+  });
+  flush();
+  $('cmp').innerHTML=h+'</tbody>';
+}
+
+const CYC={undefined:'k',k:'w',w:undefined};
+$('cmp').addEventListener('click',e=>{const td=e.target.closest('td[data-m]');if(!td)return;
+  const k=td.dataset.m;const n=CYC[cur().marks[k]];if(n)cur().marks[k]=n;else delete cur().marks[k];save();renderShow();});
+$('clearMarks').onclick=()=>{if(!Object.keys(cur().marks).length)return;if(!confirm('清除這個案件的所有標記？'))return;cur().marks={};save();renderShow();toast('已清除標記');};
+
+function setMode(m){mode=m;$('mEdit').setAttribute('aria-pressed',m==='edit');$('mShow').setAttribute('aria-pressed',m==='show');
+  $('editView').hidden=m!=='edit';$('showView').hidden=m!=='show';$('caseRow').hidden=m!=='edit';
+  if(m==='show')renderShow();else renderEdit();}
+
+$('mEdit').onclick=()=>setMode('edit');
+$('mShow').onclick=()=>setMode('show');
+$('onlyDiff').onchange=renderShow;
+$('caseSel').onchange=e=>{store.current=e.target.value;active=0;save();renderCases();renderEdit();};
+$('caseName').oninput=e=>{cur().name=e.target.value;save();const o=$('caseSel').selectedOptions[0];if(o)o.textContent=e.target.value||'未命名案件';$('caseSub').textContent=(e.target.value||'未命名案件')+'　｜　依原報價呈現，差異另行註明';};
+$('newCase').onclick=()=>{const id=uid();store.cases[id]={name:'新案件',marks:{},extra:[],plans:[blankPlan(0),blankPlan(1)]};store.current=id;active=0;save();renderCases();renderEdit();toast('已新增空白案件');};
+$('dupCase').onclick=()=>{const id=uid();const c=JSON.parse(JSON.stringify(cur()));c.name=(c.name||'案件')+'（複製）';store.cases[id]=c;store.current=id;active=0;save();renderCases();renderEdit();toast('已複製成新案件');};
+$('delCase').onclick=()=>{if(Object.keys(store.cases).length<=1){toast('至少需保留一個案件');return;}if(!confirm('確定刪除「'+(cur().name||'此案件')+'」？'))return;delete store.cases[store.current];store.current=Object.keys(store.cases)[0];active=0;save();renderCases();renderEdit();toast('已刪除案件');};
+
+load();renderTh();renderCases();setMode('edit');
+</script>
+</body>
+</html>

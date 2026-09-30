@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>車險到期追蹤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+.views{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.summary{color:var(--muted);font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
+.summary b{color:var(--text);font-size:18px;margin-right:2px}
+h2{font-size:16px;color:var(--ink);margin:22px 0 8px;display:flex;gap:8px;align-items:baseline}
+h2 small{font-weight:400;color:var(--muted);font-size:13px}
+.list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.row{display:grid;grid-template-columns:76px 1fr minmax(180px,240px);gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center}
+.row:last-child{border-bottom:0}
+.due{text-align:center;border-radius:10px;padding:6px 0;background:var(--sticky)}
+.due b{display:block;font-size:24px;line-height:1.1}
+.due span{font-size:12px;color:var(--muted)}
+.lv-u .due{background:var(--fail-bg)} .lv-u .due b{color:var(--fail)}
+.lv-w .due{background:var(--warn-bg)} .lv-w .due b{color:var(--warn)}
+.lv-o .due b{color:var(--pass)}
+.nm{font-weight:700;font-size:16px}
+.nm button{border:0;background:none;padding:0;min-height:0;font-weight:700;color:var(--text);text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.meta{font-size:14px;color:var(--muted)}
+.dates{font-size:14px;margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.act{display:flex;flex-direction:column;gap:6px}
+.act select,.act input{min-height:36px;padding:6px 8px;font-size:14px}
+.prep-row{grid-template-columns:1fr minmax(180px,240px)}
+.toolsRow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.toolsRow input{flex:1;min-width:200px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{min-height:34px;padding:4px 12px;font-size:14px;border-radius:999px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.card{border-bottom:1px solid var(--line);padding:12px 14px}
+.card:last-child{border-bottom:0}
+.card-hd{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.veh{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:14px}
+.veh .cov{color:var(--muted);font-size:13px;margin-top:2px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.empty button{margin-top:10px}
+dialog{border:0;border-radius:14px;padding:0;width:min(640px,94vw);max-height:92vh;background:var(--paper);color:var(--text)}
+dialog::backdrop{background:rgba(15,25,40,.45)}
+.dlg{padding:18px}
+.dlg h3{margin:0 0 12px;color:var(--ink);font-size:18px}
+.dlg h4{margin:18px 0 8px;font-size:15px;color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 14px}
+.grid label,.fld{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.full{grid-column:1/-1}
+.vblock{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel)}
+.vblock-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700;color:var(--ink)}
+.covs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.covs label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;cursor:pointer;color:var(--text)}
+.covs input{width:16px;min-height:16px;height:16px;margin:0}
+.covs label:has(input:checked){background:var(--hi);border-color:var(--ink)}
+.dlg-ft{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-top:18px;position:sticky;bottom:0;background:var(--paper);padding-top:10px}
+.dlg-ft .r{display:flex;gap:8px;margin-left:auto}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.setup{max-width:560px;margin:24px auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.setup h2{margin-top:0}
+.setup label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);margin-bottom:12px}
+.err{color:var(--fail);font-size:14px;min-height:1.4em}
+@media (max-width:640px){
+  .row{grid-template-columns:64px 1fr}
+  .row .act{grid-column:1/-1}
+  .prep-row{grid-template-columns:1fr}
+  .due b{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <header class="top">
+    <div>
+      <a class="back" href="index.html">‹ 工具箱</a>
+      <h1>車險到期追蹤</h1>
+    </div>
+    <div class="bar">
+      <button id="privBtn" aria-pressed="false">遮蔽姓名與車牌</button>
+      <button id="setBtn">設定</button>
+    </div>
+  </header>
+
+  <section id="setup" class="setup" hidden>
+    <h2>連線到你的試算表</h2>
+    <p class="sub">網址和密鑰只會存在這台裝置。還沒架設後端的話，請先照《架設教學》完成第 1 到 5 步。</p>
+    <label>網頁應用程式網址<input id="suUrl" placeholder="https://script.google.com/macros/s/……/exec" autocomplete="off"></label>
+    <label>密鑰<input id="suKey" type="password" autocomplete="off"></label>
+    <div class="err" id="suErr"></div>
+    <button class="primary" id="suGo">連線</button>
+  </section>
+
+  <section id="app" hidden>
+    <div class="views">
+      <div class="seg" role="group" aria-label="檢視">
+        <button data-v="todo" aria-pressed="true">待處理</button>
+        <button data-v="all" aria-pressed="false">全部客戶</button>
+      </div>
+      <div class="bar">
+        <button id="reload">重新整理</button>
+        <button class="primary" id="addBtn">新增客戶</button>
+      </div>
+    </div>
+    <div class="summary" id="summary"></div>
+
+    <div id="vTodo"></div>
+
+    <div id="vAll" hidden>
+      <div class="toolsRow">
+        <input id="q" type="search" placeholder="搜尋姓名或車牌" aria-label="搜尋姓名或車牌">
+      </div>
+      <div class="chips" id="chips"></div>
+      <div id="allList" style="margin-top:12px"></div>
+    </div>
+  </section>
+</div>
+
+<dialog id="edDlg">
+  <form method="dialog" class="dlg" id="edForm" novalidate>
+    <h3 id="edTitle">新增客戶</h3>
+    <div class="grid">
+      <label>客戶姓名<input id="edName" autocomplete="off" required></label>
+      <label>前置作業<select id="edPrep"><option>待聯繫</option><option>已聯繫</option><option>已記錄</option></select></label>
+      <label class="full">備註<textarea id="edNote" rows="2" placeholder="例如：偏好下午聯絡、介紹人"></textarea></label>
+    </div>
+    <h4>車輛</h4>
+    <div id="edVeh"></div>
+    <button type="button" id="edAddV">＋ 新增車輛</button>
+    <p class="hint">狀態為「已記錄」時，每台車至少要填一個到期日。改了到期日（進入新保期），續保狀態會自動清空、重新開始提醒。</p>
+    <div class="err" id="edErr"></div>
+    <div class="dlg-ft">
+      <button type="button" class="danger" id="edDel">刪除客戶</button>
+      <div class="r">
+        <button type="button" id="edCancel">取消</button>
+        <button type="button" class="primary" id="edSave">儲存</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="stDlg">
+  <div class="dlg">
+    <h3>設定</h3>
+    <h4>提醒方式（所有裝置共用）</h4>
+    <div class="grid">
+      <label>提醒天數<input id="stDays" placeholder="60,30,7" inputmode="numeric"></label>
+      <label>每天幾點檢查並寄信<select id="stHour"></select></label>
+      <label>通知信箱<input id="stMail" type="email" placeholder="留空會寄給部署者本人"></label>
+      <label class="full">任意險勾選項目（一行一項）<textarea id="stCov" rows="6"></textarea></label>
+    </div>
+    <p class="hint">提醒天數用逗號分隔，最多 6 個。Google 會在你選的那一個小時內執行檢查，例如選 22 點，信會在 22:00 到 23:00 之間寄出。同一台車每個階段只寄一次；漏掉的階段會在下一次檢查補寄。</p>
+    <div class="bar" style="margin-top:10px">
+      <button class="primary" id="stSave">儲存提醒設定</button>
+      <button id="stTest">寄測試信</button>
+    </div>
+    <h4>這台裝置的連線</h4>
+    <p class="sub" id="stConn"></p>
+    <div class="bar">
+      <button id="stRe">更換網址或密鑰</button>
+      <button class="danger" id="stOff">中斷這台裝置的連線</button>
+    </div>
+    <div class="dlg-ft"><div class="r"><button id="stClose">關閉</button></div></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="common.js"></script>
+<script>
+const RENEW = ['', '已通知', '已報價', '已約訪', '已見面／已續保', '未見面／未續保'];
+const CLOSED = ['已見面／已續保', '未見面／未續保'];
+const NEEDS_REASON = '未見面／未續保';
+const $ = id => document.getElementById(id);
+const esc = TB.esc;
+
+let clients = [], settings = {remindDays:[60,30,7], covOptions:[], notifyEmail:''};
+let view = 'todo', chip = 'all', editing = null;
+
+/* ---------- 計算 ---------- */
+const stagesAsc = () => [...settings.remindDays].sort((a,b)=>a-b);
+const maxDay = () => Math.max(...settings.remindDays);
+function level(d){ const s = stagesAsc(); if(d <= s[0]) return 'u'; if(s.length > 1 && d <= s[1]) return 'w'; return 'o'; }
+function vehDue(v){
+  const out = [];
+  [['comp','強制險'],['vol','任意險']].forEach(([k,l]) => { const d = TB.daysUntil(v[k]); if(d != null) out.push({k,l,d,date:v[k]}); });
+  return out;
+}
+function inWindow(v){ if(CLOSED.includes(v.status)) return null; const ds = vehDue(v).filter(x => x.d <= maxDay()); return ds.length ? Math.min(...ds.map(x=>x.d)) : null; }
+function dueTxt(d){ return d < 0 ? ['已過期', (-d)+' 天'] : d === 0 ? ['今天', '到期'] : [String(d), '天後']; }
+
+/* ---------- 畫面 ---------- */
+function render(){
+  const todo = [];
+  clients.forEach(c => c.vehicles.forEach(v => { const d = inWindow(v); if(d != null) todo.push({c, v, d}); }));
+  todo.sort((a,b) => a.d - b.d);
+  const prep = clients.filter(c => c.prep !== '已記錄');
+  const urgent = todo.filter(x => level(x.d) === 'u').length;
+  $('summary').innerHTML = `<span><b>${todo.length}</b> 台車在提醒期內</span><span><b>${urgent}</b> 台在 ${stagesAsc()[0]} 天內</span><span><b>${prep.length}</b> 位前置作業中</span><span><b>${clients.length}</b> 位客戶</span>`;
+  if(view === 'todo') renderTodo(todo, prep); else renderAll();
+}
+
+function renewSelect(c, v){
+  return `<select data-act="status" data-cid="${esc(c.id)}" data-vid="${esc(v.vid)}" aria-label="續保狀態">
+    ${RENEW.map(s => `<option value="${esc(s)}" ${s===v.status?'selected':''}>${s || '尚未處理'}</option>`).join('')}</select>
+    <input data-act="reason" data-cid="${esc(c.id)}" data-vid="${esc(v.vid)}" placeholder="未續保原因" value="${esc(v.reason)}" ${v.status===NEEDS_REASON?'':'hidden'}>`;
+}
+
+function renderTodo(todo, prep){
+  let h = `<h2>提醒期內<small>${maxDay()} 天內到期、尚未結案，依到期日排序</small></h2>`;
+  if(!todo.length) h += `<div class="list"><div class="empty">目前沒有需要處理的到期車輛。</div></div>`;
+  else h += '<div class="list">' + todo.map(({c,v,d}) => {
+    const [n, u] = dueTxt(d);
+    return `<div class="row lv-${level(d)}">
+      <div class="due"><b>${n}</b><span>${u}</span></div>
+      <div>
+        <div class="nm"><button data-edit="${esc(c.id)}">${esc(TB.name(c.name))}</button></div>
+        <div class="meta">${esc(v.type)}　${esc(TB.plate(v.plate))}</div>
+        <div class="dates">${vehDue(v).map(x => `<span>${x.l} ${TB.fmtDate(x.date)}</span>`).join('')}</div>
+      </div>
+      <div class="act">${renewSelect(c, v)}</div>
+    </div>`;}).join('') + '</div>';
+
+  h += `<h2>前置作業<small>還沒記錄完成的客戶</small></h2>`;
+  if(!prep.length) h += `<div class="list"><div class="empty">沒有前置作業中的客戶。</div></div>`;
+  else h += '<div class="list">' + prep.map(c => `<div class="row prep-row">
+      <div>
+        <div class="nm"><button data-edit="${esc(c.id)}">${esc(TB.name(c.name))}</button></div>
+        <div class="meta">${c.note ? esc(c.note) : (c.vehicles.length ? c.vehicles.length + ' 台車' : '尚未填車輛')}</div>
+      </div>
+      <div class="act"><select data-act="prep" data-cid="${esc(c.id)}" aria-label="前置作業狀態">
+        ${['待聯繫','已聯繫','已記錄'].map(s => `<option ${s===c.prep?'selected':''}>${s}</option>`).join('')}</select></div>
+    </div>`).join('') + '</div>';
+  $('vTodo').innerHTML = h;
+}
+
+const CHIPS = [['all','全部'],['prep','前置作業'],['open','提醒期內'],['closed','本期已結案']];
+function renderAll(){
+  $('chips').innerHTML = CHIPS.map(([k,l]) => `<button data-chip="${k}" aria-pressed="${k===chip}">${l}</button>`).join('');
+  const q = $('q').value.trim().toLowerCase();
+  let list = clients.filter(c => {
+    if(q && !c.name.toLowerCase().includes(q) && !c.vehicles.some(v => v.plate.toLowerCase().includes(q))) return false;
+    if(chip === 'prep') return c.prep !== '已記錄';
+    if(chip === 'open') return c.vehicles.some(v => inWindow(v) != null);
+    if(chip === 'closed') return c.vehicles.some(v => CLOSED.includes(v.status));
+    return true;
+  });
+  const near = c => Math.min(...c.vehicles.map(v => Math.min(...vehDue(v).map(x=>x.d), 99999)), 99999);
+  list.sort((a,b) => near(a) - near(b));
+  if(!list.length){
+    $('allList').innerHTML = `<div class="list"><div class="empty">${clients.length ? '沒有符合條件的客戶。' : '還沒有客戶資料。<br><button class="primary" data-add>新增第一位客戶</button>'}</div></div>`;
+    return;
+  }
+  $('allList').innerHTML = '<div class="list">' + list.map(c => `<div class="card">
+    <div class="card-hd">
+      <div class="nm"><button data-edit="${esc(c.id)}">${esc(TB.name(c.name))}</button></div>
+      <div class="bar">${c.prep !== '已記錄' ? `<span class="pill w">${esc(c.prep)}</span>` : ''}<button data-edit="${esc(c.id)}">編輯</button></div>
+    </div>
+    ${c.note ? `<div class="meta">${esc(c.note)}</div>` : ''}
+    ${c.vehicles.map(v => {
+      const tags = vehDue(v).map(x => { const lv = CLOSED.includes(v.status) ? 'm' : (x.d <= maxDay() ? ({u:'n',w:'w',o:'i'})[level(x.d)] : 'y');
+        return `<span class="pill ${lv}">${x.l} ${TB.fmtDate(x.date)}${x.d < 0 ? '（已過期）' : x.d <= maxDay() ? '（' + x.d + ' 天）' : ''}</span>`; }).join(' ');
+      return `<div class="veh"><div><b>${esc(v.type)}　${esc(TB.plate(v.plate))}</b>　${v.status ? `<span class="pill ${CLOSED.includes(v.status)?'m':'i'}">${esc(v.status)}</span>` : ''}</div>
+        <div class="dates">${tags || '<span class="meta">尚未填到期日</span>'}</div>
+        ${v.status === NEEDS_REASON && v.reason ? `<div class="cov">原因：${esc(v.reason)}</div>` : ''}
+        ${v.coverage.length ? `<div class="cov">${v.coverage.map(esc).join('、')}</div>` : ''}</div>`;
+    }).join('')}
+  </div>`).join('') + '</div>';
+}
+
+/* ---------- 資料 ---------- */
+async function load(silent){
+  if(!silent) $('vTodo').innerHTML = '<div class="empty">載入中…</div>';
+  try{
+    const d = await TB.api('list');
+    clients = d.clients; settings = d.settings;
+    render();
+  }catch(e){
+    $('vTodo').innerHTML = `<div class="list"><div class="empty">${esc(e.message)}<br><button id="retry">再試一次</button></div></div>`;
+    $('retry').onclick = () => load();
+  }
+}
+
+async function saveClient(c, msg){
+  const saved = await TB.api('save', {client: c});
+  const i = clients.findIndex(x => x.id === saved.id);
+  if(i >= 0) clients[i] = saved; else clients.push(saved);
+  render();
+  if(msg) TB.toast(msg);
+  return saved;
+}
+
+/* 待處理清單上的快速更新 */
+document.addEventListener('change', async e => {
+  const el = e.target; const act = el.dataset && el.dataset.act; if(!act) return;
+  const c = clients.find(x => x.id === el.dataset.cid); if(!c) return;
+  const copy = JSON.parse(JSON.stringify(c));
+  if(act === 'prep') copy.prep = el.value;
+  if(act === 'status' || act === 'reason'){
+    const v = copy.vehicles.find(x => x.vid === el.dataset.vid);
+    if(act === 'status'){
+      v.status = el.value;
+      if(el.value === NEEDS_REASON){
+        const r = el.parentElement.querySelector('[data-act="reason"]');
+        r.hidden = false; r.focus();
+        if(!v.reason){ TB.toast('請填寫未續保原因，填完後按 Enter 或點其他地方儲存'); return; }
+      }
+    } else {
+      v.reason = el.value.trim();
+      if(!v.reason){ TB.toast('未續保原因不能空白'); return; }
+      v.status = NEEDS_REASON;
+    }
+  }
+  el.disabled = true;
+  try{ await saveClient(copy, '已更新 ' + TB.name(copy.name)); }
+  catch(err){ TB.toast(err.message); render(); }
+});
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-edit],[data-chip],[data-add]'); if(!t) return;
+  if(t.dataset.edit) openEdit(t.dataset.edit);
+  else if(t.dataset.chip){ chip = t.dataset.chip; renderAll(); }
+  else openEdit(null);
+});
+
+/* ---------- 編輯視窗 ---------- */
+function vid(){ return 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+function vBlockHtml(v, n){
+  const opts = [...settings.covOptions, ...v.coverage.filter(x => !settings.covOptions.includes(x))];
+  return `<div class="vblock" data-vid="${esc(v.vid)}">
+    <div class="vblock-hd"><span>車輛 ${n}</span><button type="button" data-rmv>移除</button></div>
+    <div class="grid">
+      <label>車種<select data-f="type"><option ${v.type==='汽車'?'selected':''}>汽車</option><option ${v.type==='機車'?'selected':''}>機車</option></select></label>
+      <label>車牌<input data-f="plate" value="${esc(v.plate)}" placeholder="ABC-1234" autocapitalize="characters" autocomplete="off"></label>
+      <label>強制險到期日<input data-f="comp" type="date" value="${esc(v.comp)}"></label>
+      <label>任意險到期日<input data-f="vol" type="date" value="${esc(v.vol)}"></label>
+      <label>續保狀態<select data-f="status">${RENEW.map(s => `<option value="${esc(s)}" ${s===v.status?'selected':''}>${s || '尚未處理'}</option>`).join('')}</select></label>
+      <label>未續保原因<input data-f="reason" value="${esc(v.reason)}"></label>
+    </div>
+    <div class="covs">${opts.map(o => `<label><input type="checkbox" data-cov value="${esc(o)}" ${v.coverage.includes(o)?'checked':''}>${esc(o)}</label>`).join('')}</div>
+  </div>`;
+}
+function renumber(){ $('edVeh').querySelectorAll('.vblock-hd span').forEach((s,i) => s.textContent = '車輛 ' + (i+1)); }
+function addVehicle(v){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = vBlockHtml(v || {vid:vid(), type:'汽車', plate:'', comp:'', vol:'', coverage:[], status:'', reason:''}, $('edVeh').children.length + 1);
+  const el = wrap.firstElementChild;
+  el.querySelector('[data-rmv]').onclick = () => { el.remove(); renumber(); };
+  $('edVeh').appendChild(el);
+}
+function openEdit(id){
+  editing = id ? clients.find(c => c.id === id) : null;
+  $('edTitle').textContent = editing ? '編輯客戶' : '新增客戶';
+  $('edName').value = editing ? editing.name : '';
+  $('edPrep').value = editing ? editing.prep : '已記錄';
+  $('edNote').value = editing ? editing.note : '';
+  $('edVeh').innerHTML = '';
+  (editing ? editing.vehicles : [null]).forEach(v => addVehicle(v));
+  $('edDel').hidden = !editing;
+  $('edErr').textContent = '';
+  $('edDlg').showModal();
+  if(!editing) $('edName').focus();
+}
+function collect(){
+  const vehicles = [...$('edVeh').children].map(b => {
+    const g = f => b.querySelector(`[data-f="${f}"]`).value.trim();
+    const old = editing && editing.vehicles.find(v => v.vid === b.dataset.vid);
+    return {vid:b.dataset.vid, type:g('type'), plate:g('plate').toUpperCase(), comp:g('comp'), vol:g('vol'), status:g('status'), reason:g('reason'),
+      coverage:[...b.querySelectorAll('[data-cov]:checked')].map(x => x.value), notified: old ? old.notified : {comp:[],vol:[]}};
+  }).filter(v => v.plate || v.comp || v.vol);
+  return {id: editing ? editing.id : '', name:$('edName').value.trim(), prep:$('edPrep').value, note:$('edNote').value.trim(), vehicles};
+}
+function validate(c){
+  if(!c.name) return '請填寫客戶姓名。';
+  if(c.vehicles.some(v => !v.plate)) return '有車輛沒有填車牌。';
+  if(c.prep === '已記錄'){
+    if(!c.vehicles.length) return '狀態是「已記錄」時，至少要有一台車。';
+    if(c.vehicles.some(v => !v.comp && !v.vol)) return '狀態是「已記錄」時，每台車至少要填一個到期日。';
+  }
+  if(c.vehicles.some(v => v.status === NEEDS_REASON && !v.reason)) return '選了「未見面／未續保」，請填寫原因。';
+  return '';
+}
+$('edSave').onclick = async () => {
+  const c = collect(); const err = validate(c);
+  if(err){ $('edErr').textContent = err; return; }
+  $('edSave').disabled = true; $('edSave').textContent = '儲存中…';
+  try{ await saveClient(c, (editing ? '已更新 ' : '已新增 ') + TB.name(c.name)); $('edDlg').close(); }
+  catch(e){ $('edErr').textContent = e.message; }
+  $('edSave').disabled = false; $('edSave').textContent = '儲存';
+};
+$('edDel').onclick = async () => {
+  if(!editing || !confirm('確定刪除「' + editing.name + '」的所有資料？刪除後無法復原。')) return;
+  try{ await TB.api('delete', {id: editing.id}); clients = clients.filter(c => c.id !== editing.id); render(); $('edDlg').close(); TB.toast('已刪除'); }
+  catch(e){ $('edErr').textContent = e.message; }
+};
+$('edCancel').onclick = () => $('edDlg').close();
+$('edAddV').onclick = () => addVehicle();
+
+/* ---------- 設定視窗 ---------- */
+function openSettings(){
+  $('stDays').value = settings.remindDays.join(',');
+  $('stMail').value = settings.notifyEmail || '';
+  const hr = settings.notifyHour ?? 22;
+  $('stHour').innerHTML = Array.from({length:24}, (_, h) => `<option value="${h}" ${h===hr?'selected':''}>${h < 12 ? '上午' : '下午'} ${String(h % 12 === 0 ? 12 : h % 12)} 點（${h}:00）</option>`).join('');
+  $('stCov').value = settings.covOptions.join('\n');
+  const cfg = TB.getCfg();
+  $('stConn').textContent = cfg ? '已連線：' + cfg.url.replace(/^(.{42}).+(.{10})$/, '$1…$2') : '尚未連線';
+  $('stDlg').showModal();
+}
+$('stSave').onclick = async () => {
+  try{
+    settings = await TB.api('saveSettings', {settings:{remindDays:$('stDays').value, notifyEmail:$('stMail').value, notifyHour:$('stHour').value, covOptions:$('stCov').value.split('\n')}});
+    render(); TB.toast('已儲存提醒設定'); openSettings();
+  }catch(e){ TB.toast(e.message); }
+};
+$('stTest').onclick = async () => {
+  $('stTest').disabled = true;
+  try{ const r = await TB.api('testMail'); TB.toast('測試信已寄到 ' + r.to); }catch(e){ TB.toast(e.message); }
+  $('stTest').disabled = false;
+};
+$('stRe').onclick = () => { $('stDlg').close(); showSetup(); };
+$('stOff').onclick = () => { if(!confirm('中斷後，這台裝置需要重新輸入網址和密鑰。試算表裡的資料不受影響。')) return; TB.clearCfg(); $('stDlg').close(); showSetup(); };
+$('stClose').onclick = () => $('stDlg').close();
+
+/* ---------- 首次連線 ---------- */
+function showSetup(){
+  const cfg = TB.getCfg();
+  $('suUrl').value = cfg ? cfg.url : ''; $('suKey').value = cfg ? cfg.key : '';
+  $('setup').hidden = false; $('app').hidden = true; $('setBtn').hidden = true;
+}
+$('suGo').onclick = async () => {
+  const url = $('suUrl').value.trim(), key = $('suKey').value.trim();
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)){ $('suErr').textContent = '網址應該是 https://script.google.com/macros/s/…/exec 的格式。'; return; }
+  if(!key){ $('suErr').textContent = '請輸入密鑰。'; return; }
+  $('suGo').disabled = true; $('suErr').textContent = '連線中…';
+  try{
+    const d = await TB.api('list', null, {url, key});
+    TB.setCfg(url, key); clients = d.clients; settings = d.settings;
+    $('suErr').textContent = ''; startApp(true);
+    TB.toast('連線成功');
+  }catch(e){ $('suErr').textContent = e.message; }
+  $('suGo').disabled = false;
+};
+
+function startApp(loaded){
+  $('setup').hidden = true; $('app').hidden = false; $('setBtn').hidden = false;
+  if(loaded) render(); else load();
+}
+
+/* ---------- 其他 ---------- */
+document.querySelectorAll('.seg [data-v]').forEach(b => b.onclick = () => {
+  view = b.dataset.v;
+  document.querySelectorAll('.seg [data-v]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $('vTodo').hidden = view !== 'todo'; $('vAll').hidden = view !== 'all';
+  render();
+});
+$('q').oninput = renderAll;
+$('reload').onclick = () => load();
+$('addBtn').onclick = () => openEdit(null);
+$('setBtn').onclick = openSettings;
+function syncPriv(){ $('privBtn').setAttribute('aria-pressed', TB.isPrivate()); $('privBtn').textContent = TB.isPrivate() ? '顯示姓名與車牌' : '遮蔽姓名與車牌'; }
+$('privBtn').onclick = () => { TB.setPrivate(!TB.isPrivate()); syncPriv(); if(!$('app').hidden) render(); };
+syncPriv();
+
+if(TB.getCfg()) startApp(false); else showSetup();
+</script>
+</body>
+</html>
